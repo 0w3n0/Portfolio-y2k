@@ -1,0 +1,103 @@
+/* Clavier du distributeur (bas gauche) + fiche projet (droite) */
+.keypad,
+.project-panel {
+  position: fixed;
+  z-index: 10;
+  text-transform: uppercase;
+}
+.keypad button,
+.project-panel button,
+.project-panel a {
+  all: unset;
+  cursor: pointer;
+}
+.keypad button:focus-visible,
+.project-panel button:focus-visible,
+.project-panel a:focus-visible {
+  outline: 4px solid var(--accent);
+  outline-offset: 3px;
+}
+.code {
+  font-family: var(--font-display);
+  color: var(--pop-pink);
+}
+
+.keypad {
+  left: 3vw;
+  bottom: 5vh;
+  transform: rotate(-4deg);
+}
+.keypad ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.keypad button {
+  display: block;
+  padding: 0.3em 1.2em 0.3em 0.6em;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--paper);
+  background: var(--ink);
+  clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
+  transition: transform 0.12s, background 0.12s;
+}
+.keypad button:hover,
+.keypad button[aria-pressed='true'] {
+  background: var(--accent);
+  transform: translateX(0.6rem);
+}
+.keypad button[aria-pressed='true'] .code,
+.keypad button:hover .code {
+  color: var(--ink);
+}
+
+.project-panel {
+  top: 14vh;
+  right: 0;
+  width: min(32rem, 90vw);
+  padding: 2rem 2.5rem 2rem 4rem;
+  color: var(--paper);
+  background: var(--ink);
+  clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
+  box-shadow: -10px 10px 0 var(--accent);
+}
+.project-panel .code {
+  font-size: 2rem;
+}
+.project-panel h2 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 400;
+  line-height: 0.95;
+}
+.project-panel .meta {
+  color: var(--pop-pink); /* rouge sur noir < AA */
+  font-weight: 700;
+}
+.project-panel p {
+  text-transform: none;
+}
+.project-panel a,
+.project-panel .close {
+  display: inline-block;
+  margin: 1rem 1rem 0 0;
+  padding: 0.4em 0.8em;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+.project-panel a {
+  background: var(--accent);
+}
+.project-panel .close {
+  border: 2px solid var(--paper);
+}
+.project-panel kbd {
+  margin-left: 0.4em;
+  font-family: var(--font-body);
+  font-size: 0.75em;
+  opacity: 0.8;
+}

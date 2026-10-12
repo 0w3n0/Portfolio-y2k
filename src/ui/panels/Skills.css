@@ -1,0 +1,68 @@
+/* Écran de perso : fiche (bas gauche) + étiquettes des boules en orbite. Accent hyperpop de l'écran : rose. */
+.char-card {
+  position: fixed;
+  z-index: 10;
+  left: 3vw;
+  bottom: 6vh;
+  padding: 1rem 2.5rem 1.2rem 1.2rem;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  transform: rotate(-4deg);
+  clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
+  box-shadow: 8px 8px 0 var(--pop-pink);
+}
+.char-card .lv {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--pop-pink);
+}
+.char-card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 400;
+  line-height: 0.9;
+}
+.char-card .role {
+  margin: 0.3rem 0;
+  font-weight: 700;
+}
+.stars {
+  color: var(--pop-pink);
+  letter-spacing: 0.1em;
+}
+
+.skill-tag {
+  display: grid;
+  padding: 0.2em 1.1em 0.25em 0.5em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.skill-tag strong {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 400;
+  line-height: 1;
+}
+.skill-tag span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--pop-pink);
+}
+.skill-tag ul {
+  margin: 0.2em 0 0;
+  padding: 0.2em 0 0;
+  list-style: none;
+  border-top: 2px solid var(--pop-pink);
+  font-size: 0.7rem;
+}
+.skill-tag li::before {
+  content: '▸ ';
+  color: var(--pop-pink);
+}

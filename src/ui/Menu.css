@@ -1,0 +1,118 @@
+/* Menu brutaliste — par-dessus le Canvas (fond --paper) */
+.menu,
+.zone-bar {
+  position: fixed;
+  z-index: 10;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+}
+
+.menu {
+  left: 4vw;
+  bottom: 6vh;
+  transform: rotate(-6deg);
+  transform-origin: left bottom;
+}
+.menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.menu li {
+  margin-left: calc(var(--i) * 2.2vw); /* escalier en diagonale */
+}
+
+.menu-item {
+  all: unset;
+  cursor: pointer;
+  display: inline-block;
+  padding: 0.05em 0.4em 0.05em 0.25em;
+  font-size: clamp(3rem, 9vw, 8rem);
+  line-height: 0.95;
+  color: var(--paper);
+  background: var(--ink);
+  clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%);
+  transition: transform 0.15s, background 0.15s;
+}
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--accent);
+  transform: translateX(1.2vw);
+}
+.menu-item:focus-visible {
+  outline: 6px solid var(--accent);
+  outline-offset: 4px;
+  clip-path: none; /* sinon le contour est découpé */
+}
+
+.zone-bar {
+  top: 3vh;
+  left: 3vw;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+.zone-title {
+  margin: 0;
+  padding: 0 0.4em 0 0.2em;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--paper);
+  background: var(--ink);
+  transform: rotate(-5deg);
+  clip-path: polygon(0 0, 100% 0, 93% 100%, 0 100%);
+}
+.back {
+  all: unset;
+  cursor: pointer;
+  padding: 0.4em 0.8em;
+  font-size: 1.25rem;
+  color: var(--paper);
+  background: var(--accent);
+  box-shadow: 6px 6px 0 var(--ink);
+  transition: transform 0.12s;
+}
+.back:hover {
+  transform: translate(-2px, -2px);
+}
+.back:focus-visible {
+  outline: 4px solid var(--ink);
+  outline-offset: 4px;
+}
+.back kbd {
+  margin-left: 0.5em;
+  font-family: var(--font-body);
+  font-size: 0.7em;
+  opacity: 0.8;
+}
+
+/* Balayage : bandes plus larges que l'écran pour le couvrir entièrement à mi-course */
+.swipe {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  pointer-events: none;
+}
+.swipe-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -50vw;
+  width: 200vw;
+  clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+}
+.swipe-red {
+  background: var(--accent);
+}
+.swipe-ink {
+  background: var(--ink);
+}
+.swipe-fade {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--ink);
+  pointer-events: none;
+}
