@@ -1,6 +1,7 @@
 import { Outlines, useCursor } from '@react-three/drei'
 import { useState } from 'react'
 import { CONTACTS, dial } from '../../data/contact'
+import { play } from '../../audio'
 import { useScene } from '../../store/useScene'
 import { SPOTS } from '../City'
 import { toonGradient } from '../toon'
@@ -19,7 +20,9 @@ function Key({ i }: { i: number }) {
 
   const press = () => {
     const { zoneId, isTransitioning } = useScene.getState()
-    if (zoneId === 'contact' && !isTransitioning) dial(c.href)
+    if (zoneId !== 'contact' || isTransitioning) return
+    play('phoneKey')
+    dial(c.href)
   }
 
   return (
@@ -27,7 +30,7 @@ function Key({ i }: { i: number }) {
       position={[((i % 2) - 0.5) * 0.2, 1.3 - Math.floor(i / 2) * 0.16, FACE_Z + 0.02]}
       scale={hovered ? 1.2 : 1}
       onClick={(e) => (e.stopPropagation(), press())}
-      onPointerOver={(e) => (e.stopPropagation(), setHovered(true))}
+      onPointerOver={(e) => (e.stopPropagation(), setHovered(true), play('hover'))}
       onPointerOut={() => setHovered(false)}
     >
       <boxGeometry args={[0.14, 0.11, 0.04]} />

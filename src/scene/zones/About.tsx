@@ -3,6 +3,7 @@ import type { ThreeEvent } from '@react-three/fiber'
 import { useEffect, useRef, useState } from 'react'
 import { CanvasTexture, SRGBColorSpace } from 'three'
 import { TAGS } from '../../data/about'
+import { loop } from '../../audio'
 import { useScene } from '../../store/useScene'
 import { SPOTS } from '../City'
 import { toonGradient } from '../toon'
@@ -77,10 +78,17 @@ export default function About() {
     tex.needsUpdate = true
   }, [wallKey])
 
+  // fin du trait : on relâche le bouton ou on sort du mur
+  const stop = () => {
+    last.current = null
+    loop('spray', false)
+  }
+
   const paint = (e: ThreeEvent<PointerEvent>) => {
     const { zoneId, isTransitioning, sprayColor } = useScene.getState()
-    if (!(e.buttons & 1) || !e.uv || zoneId !== 'about' || isTransitioning) return (last.current = null)
+    if (!(e.buttons & 1) || !e.uv || zoneId !== 'about' || isTransitioning) return stop()
     e.stopPropagation()
+    loop('spray', true)
     const x = e.uv.x * PX, y = (1 - e.uv.y) * PY
     const from = last.current ?? { x, y }
     const steps = Math.max(1, Math.ceil(Math.hypot(x - from.x, y - from.y) / (R / 3))) // trait continu même si la souris va vite
@@ -101,9 +109,9 @@ export default function About() {
         position={[0, H / 2, 0.16]}
         onPointerDown={paint}
         onPointerMove={paint}
-        onPointerUp={() => (last.current = null)}
+        onPointerUp={stop}
         onPointerOver={() => setHovered(true)}
-        onPointerOut={() => ((last.current = null), setHovered(false))}
+        onPointerOut={() => (stop(), setHovered(false))}
       >
         <planeGeometry args={[W, H]} />
         <meshBasicMaterial map={tex} />

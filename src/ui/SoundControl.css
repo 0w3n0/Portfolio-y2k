@@ -1,0 +1,44 @@
+/* Réglage du son : en haut à droite, au-dessus de l'image d'arrivée et des panels */
+.sound {
+  position: fixed;
+  z-index: 20;
+  top: var(--space-6);
+  right: var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.sound-toggle {
+  all: unset;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-3);
+  font: 700 12px/16px var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--ground);
+  border: 2px solid var(--edge);
+  transform: skewX(calc(var(--cut) * -1));
+}
+.sound-toggle > span {
+  display: inline-block;
+  transform: skewX(var(--cut));
+}
+.sound-toggle[aria-pressed='true'] {
+  color: var(--on-lavender);
+  background: var(--lavender);
+}
+.sound-toggle:focus-visible,
+.sound input:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.sound input {
+  width: 6rem;
+  accent-color: var(--lavender);
+  cursor: pointer;
+}
+.sound input:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

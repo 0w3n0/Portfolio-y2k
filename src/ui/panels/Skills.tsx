@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import { useState } from 'react'
 import { PROJECTS } from '../../data/projects'
 import { GEAR, PROFILE, SKILLS, STATS } from '../../data/skills'
+import { play } from '../../audio'
 import { useScene } from '../../store/useScene'
 import './Skills.css'
 
@@ -54,7 +55,7 @@ export default function SkillsPanel() {
         >
           <div className="sheet-tabs" role="tablist">
             {TABS.map((t, i) => (
-              <button key={t} role="tab" id={`tab-${i}`} aria-selected={tab === i} aria-controls="sheet-panel" onClick={() => setTab(i)}>
+              <button key={t} role="tab" id={`tab-${i}`} aria-selected={tab === i} aria-controls="sheet-panel" onPointerEnter={() => play('hover')} onClick={() => (play('tab'), setTab(i))}>
                 <span>{t}</span>
               </button>
             ))}

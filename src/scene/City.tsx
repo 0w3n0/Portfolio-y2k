@@ -59,9 +59,10 @@ BUILDINGS.forEach(({ pos: [x, , z], size: [w, h, d] }, b) => {
   }
 })
 
-// Hauteur du toit de l'immeuble de la cellule (x, z), pour poser le perso dessus (Hero).
+// Immeuble de la cellule centrée en (x, z) ; undefined = place d'un quartier. Pour caler le perso sur les toits et les façades (Hero).
+export const buildingAt = (x: number, z: number) => BUILDINGS.find(({ pos }) => pos[0] === x && pos[2] === z)
 export const roofAt = (x: number, z: number) => {
-  const b = BUILDINGS.find(({ pos }) => pos[0] === x && pos[2] === z)!
+  const b = buildingAt(x, z)!
   return b.pos[1] + b.size[1] / 2
 }
 

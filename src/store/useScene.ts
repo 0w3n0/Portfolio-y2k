@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { C } from '../tokens'
 
 export type ZoneId = 'projects' | 'skills' | 'about' | 'contact'
@@ -13,17 +14,26 @@ type SceneState = {
   projectId: string | null // produit sorti du distributeur → panel ouvert
   sprayColor: string // bombe choisie pour le mur About
   wallKey: number // +1 = repeindre le mur About à neuf
+  volume: number // 0→1, volume général (ui/SoundControl), mémorisé dans le navigateur
+  muted: boolean
 }
 
 // Mise à jour via useScene.setState({ ... }) tant qu'aucune action dédiée n'est nécessaire.
-export const useScene = create<SceneState>(() => ({
-  mode: 'overview',
-  zoneId: null,
-  scrollProgress: 0,
-  isTransitioning: false,
-  dashing: false,
-  journey: 0,
-  projectId: null,
-  sprayColor: C['pop-pink'],
-  wallKey: 0,
-}))
+export const useScene = create<SceneState>()(
+  persist(
+    (): SceneState => ({
+      mode: 'overview',
+      zoneId: null,
+      scrollProgress: 0,
+      isTransitioning: false,
+      dashing: false,
+      journey: 0,
+      projectId: null,
+      sprayColor: C['pop-pink'],
+      wallKey: 0,
+      volume: 0.7,
+      muted: false,
+    }),
+    { name: 'od-sound', partialize: (s) => ({ volume: s.volume, muted: s.muted }) }, // seul le réglage du son survit au rechargement
+  ),
+)

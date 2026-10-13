@@ -3,10 +3,11 @@ import { useFrame } from '@react-three/fiber'
 import { animate, type AnimationPlaybackControls } from 'motion'
 import { useMemo, useRef, type ComponentRef } from 'react'
 import { AdditiveBlending, MathUtils, Object3D, Vector3, type Group, type InstancedMesh } from 'three'
+import { play } from '../audio'
 import { useScene, type ZoneId } from '../store/useScene'
 import { C } from '../tokens'
 import Avatar, { WALL_ARM, ghostGeometry } from './Avatar'
-import { CELL, SPOTS, roofAt, type V3 } from './City'
+import { CELL, SPOTS, buildingAt, roofAt, type V3 } from './City'
 import { MACHINE } from './zones/Projects'
 
 // Le perso du visiteur : au premier plan sur un toit (derrière l'image du Menu) en overview.
@@ -30,41 +31,54 @@ const START = new Vector3(26, roofAt(24, 12), 14) // coin du toit le plus proche
 const START_FACE = 0.46 // vers la caméra d'overview (CameraRig)
 
 export const DASH_S = 2 // durée de toute la séquence de téléportations, quelle que soit la distance
-const DASH_Y = 3 // les immeubles font au moins 4 m (City) : à cette hauteur il y a toujours un mur
-const SIDE = 2.2 // écart au milieu de la rue ; façades à 2,5–3,5 m du milieu (immeubles de 5 à 7 m, cellules de 12)
+const DASH_Y = 3 // hauteur des appuis (abaissée sur les immeubles bas pour garder la tête sous le toit)
+const GAP = 0.35 // du centre du corps à la façade : la main tendue (WALL_ARM) touche le mur
 
-// Points de téléportation : il apparaît d'un coup à chacun, en pose, et laisse un hologramme à celui qu'il quitte.
-type Pt = { pos: Vector3; wall: Vector3 | null; rot: number } // wall = direction de la façade sur laquelle il prend appui
+// Points de téléportation : il apparaît d'un coup à chacun, en pose, et laisse un hologramme là où il a pris appui (toit ou façade).
+// wall = direction de la façade sur laquelle il prend appui ; ghost = hologramme quand il le quitte (pas aux carrefours, où il ne touche rien).
+type Pt = { pos: Vector3; wall: Vector3 | null; ghost: boolean; rot: number }
 const route: Pt[] = []
-
-// Zigzag mur à mur de a vers b, un point par ~6 m ; a et b restent au milieu de la rue.
-// Rester dans le couloir de la rue (ou d'un carrefour) garantit que ni lui ni sa traînée ne traversent un immeuble.
-function zigzag(a: Vector3, b: Vector3, pts: Pt[]) {
-  const len = Math.hypot(b.x - a.x, b.z - a.z)
-  if (len < 0.01) return
-  const k = Math.max(2, Math.round(len / 6))
-  const side = new Vector3(a.z - b.z, 0, b.x - a.x).setLength(SIDE)
-  for (let m = 1; m <= k; m++) {
-    const wall = m < k ? side.clone().multiplyScalar(m % 2 ? 1 : -1) : null
-    pts.push({ pos: a.clone().lerp(b, m / k).add(wall ?? new Vector3()), wall, rot: 0 })
-  }
-}
+const pt = (pos: Vector3, ghost: boolean, wall: Vector3 | null = null): Pt => ({ pos, wall, ghost, rot: 0 })
 
 // Carrefour d'indice (a, b) : rue entre les cellules a et a + 1.
 const cross = (a: number, b: number) => new Vector3((a + 0.5) * CELL, DASH_Y, (b + 0.5) * CELL)
 // Rue de départ (s) et d'arrivée (t) sur un axe : le côté de chaque cellule qui fait face à l'autre ; même rangée → la rue la plus proche de v.
 const streets = (s: number, t: number, v: number) => (t > s ? [s, t - 1] : t < s ? [s - 1, t] : Array(2).fill(Math.round(v / CELL - 0.5)))
 
+// Le long d'une rue, du carrefour `from` au carrefour `to` : un appui par bloc, plaqué sur la vraie façade (City),
+// en alternant les côtés ; côté place (pas d'immeuble) → l'autre côté. Tout reste dans le couloir de la rue : rien ne traverse un immeuble.
+function run(from: [number, number], to: [number, number], pts: Pt[]) {
+  const ax = from[0] !== to[0] ? 0 : 1 // axe parcouru : 0 = x, 1 = z
+  const step = Math.sign(to[ax] - from[ax]), lane = from[1 - ax]
+  for (let c = from[ax]; c !== to[ax]; c += step) {
+    const along = (step > 0 ? c + 1 : c) * CELL // milieu du bloc
+    const prefer = pts.filter((p) => p.wall).length % 2 ? -1 : 1
+    for (const s of [prefer, -prefer]) {
+      const k = s > 0 ? lane + 1 : lane // cellule de ce côté de la rue
+      const b = ax ? buildingAt(k * CELL, along) : buildingAt(along, k * CELL)
+      if (!b) continue
+      const u = k * CELL - s * (b.size[ax ? 0 : 2] / 2 + GAP) // façade tournée vers la rue, moins l'écart
+      const y = Math.min(DASH_Y, b.pos[1] + b.size[1] / 2 - 2)
+      pts.push(pt(ax ? new Vector3(u, y, along) : new Vector3(along, y, u), true, ax ? new Vector3(s, 0, 0) : new Vector3(0, 0, s)))
+      break
+    }
+  }
+}
+
 function plan(id: ZoneId) {
   const cell = (v: number) => Math.round(v / CELL)
   const [a0, a1] = streets(cell(START.x), cell(SPOTS[id][0]), START.x)
   const [b0, b1] = streets(cell(START.z), cell(SPOTS[id][2]), START.z)
-  const p0 = cross(a0, b0), p1 = cross(a1, b0), p2 = cross(a1, b1)
-  // toit → au-dessus du carrefour à hauteur du toit → carrefour : la traînée ne coupe jamais le toit
-  const pts: Pt[] = [START, p0.clone().setY(START.y), p0].map((pos) => ({ pos: pos.clone(), wall: null, rot: 0 }))
-  zigzag(p0, p1, pts)
-  zigzag(p1, p2, pts)
-  zigzag(p2, STANDS[id].pos, pts) // dans la place, jusqu'à sa place
+  const p0 = cross(a0, b0)
+  // bord de son toit, au coin côté carrefour : en sautant vers le carrefour, la traînée sort tout de suite de l'immeuble
+  const home = buildingAt(cell(START.x) * CELL, cell(START.z) * CELL)!
+  const corner = (i: 0 | 2) => home.pos[i] + (Math.sign(p0.getComponent(i) - home.pos[i]) * home.size[i]) / 2
+  const pts: Pt[] = [pt(START.clone(), true), pt(new Vector3(corner(0), START.y, corner(2)), true), pt(p0, false)]
+  run([a0, b0], [a1, b0], pts)
+  if (a0 !== a1 && b0 !== b1) pts.push(pt(cross(a1, b0), false)) // virage
+  run([a1, b0], [a1, b1], pts)
+  if (a0 !== a1 || b0 !== b1) pts.push(pt(cross(a1, b1), false)) // carrefour du quartier
+  pts.push(pt(STANDS[id].pos.clone(), false))
   pts.forEach((p, i) => {
     // main droite (-x local) vers la façade ; sinon tourné vers le point suivant
     p.rot = p.wall ? Math.atan2(p.wall.z, -p.wall.x) : i < pts.length - 1 ? face(p.pos, pts[i + 1].pos) : STANDS[id].face
@@ -101,6 +115,7 @@ export default function Hero() {
   const dashing = useScene((s) => s.dashing)
   const [o, buf] = useMemo(() => [new Object3D(), new Float32Array(6)], [])
   const press = useRef({ key: '' as string | null, at: -9, reach: 1.4 })
+  const lastSlot = useRef(0)
 
   useFrame(({ clock }) => {
     const { mode, dashing, journey, projectId, zoneId } = useScene.getState()
@@ -114,19 +129,22 @@ export default function Hero() {
       g.rotation.y = STANDS[zoneId].face
     } else if (route.length) {
       const k = slot(journey), p = route[k]
+      if (k > lastSlot.current) play('dash') // une fois par téléportation
+      lastSlot.current = k
       g.position.copy(p.pos)
       g.rotation.y = p.rot
       if (p.wall) arm.current.rotation.z = WALL_ARM
 
-      // Hologrammes : un par point déjà quitté, jusqu'au balayage d'arrivée.
+      // Hologrammes : un par appui déjà quitté (toit, façade), jusqu'au balayage d'arrivée.
       if (ghosts.current) {
-        route.slice(0, k).forEach((q, j) => {
+        const left = route.slice(0, k).filter((q) => q.ghost)
+        left.forEach((q, j) => {
           o.position.copy(q.pos)
           o.rotation.y = q.rot
           o.updateMatrix()
           ghosts.current!.setMatrixAt(j, o.matrix)
         })
-        ghosts.current.count = Math.min(k, MAX_GHOSTS)
+        ghosts.current.count = Math.min(left.length, MAX_GHOSTS)
         ghosts.current.instanceMatrix.needsUpdate = true
       }
       // Traînée : du point quitté au point d'arrivée, s'efface avant la téléportation suivante.

@@ -4,6 +4,7 @@ import { easing } from 'maath'
 import { useRef, useState } from 'react'
 import type { Group } from 'three'
 import { COLS, PROJECTS } from '../../data/projects'
+import { play } from '../../audio'
 import { useScene } from '../../store/useScene'
 import { SPOTS } from '../City'
 import { toonGradient } from '../toon'
@@ -38,7 +39,7 @@ function Product({ i }: { i: number }) {
       <mesh
         scale={hovered ? 1.15 : 1}
         onClick={(e) => (e.stopPropagation(), pick())}
-        onPointerOver={(e) => (e.stopPropagation(), setHovered(true))}
+        onPointerOver={(e) => (e.stopPropagation(), setHovered(true), play('hover'))}
         onPointerOut={() => setHovered(false)}
       >
         <cylinderGeometry args={[0.1, 0.1, 0.28, 12]} />

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { PROJECTS, projectCode } from '../../data/projects'
+import { play } from '../../audio'
 import { useScene } from '../../store/useScene'
 import './Projects.css'
 
@@ -17,7 +18,7 @@ export default function ProjectsPanel() {
         <ul>
           {PROJECTS.map((it, n) => (
             <li key={it.id}>
-              <button aria-pressed={it.id === projectId} onClick={() => useScene.setState({ projectId: it.id })}>
+              <button aria-pressed={it.id === projectId} onPointerEnter={() => play('hover')} onClick={() => useScene.setState({ projectId: it.id })}>
                 <span className="code">{projectCode(n)}</span> {it.title}
               </button>
             </li>

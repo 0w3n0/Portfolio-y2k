@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
+import { play } from '../audio'
 import { useScene, type ZoneId } from '../store/useScene'
 import AboutPanel from './panels/About'
 import ContactPanel from './panels/Contact'
@@ -31,13 +32,15 @@ export default function Menu() {
   const swipeThen = (atMid: () => void) => {
     if (busy.current) return
     busy.current = true
+    play('swipe')
     setSwipe(Date.now())
     const total = reduced ? FADE_S : SWIPE_S + 0.08
     setTimeout(atMid, (total / 2) * 1000)
   }
 
   // Aller : balayage → dashs vus d'en haut (Hero) → balayage → zone. Sans animations : directement la zone.
-  const go = (zone: ZoneId | null) =>
+  const go = (zone: ZoneId | null) => {
+    if (!busy.current) play(zone ? 'select' : 'back')
     swipeThen(() =>
       useScene.setState(
         zone
@@ -45,6 +48,7 @@ export default function Menu() {
           : { mode: 'overview', zoneId: null, scrollProgress: 0, projectId: null, dashing: false },
       ),
     )
+  }
 
   // Fin des dashs → second balayage, qui révèle la zone.
   useEffect(
@@ -80,7 +84,7 @@ export default function Menu() {
             <ul>
               {ITEMS.map((it, i) => (
                 <li key={it.id} style={{ '--i': i } as CSSProperties}>
-                  <button className="menu-item" onClick={() => go(it.id)}>
+                  <button className="menu-item" onPointerEnter={() => play('hover')} onClick={() => go(it.id)}>
                     <span className="menu-code">0{i + 1}</span>
                     <span className="menu-label">{it.label}</span>
                   </button>
