@@ -129,7 +129,11 @@ export default function Hero() {
       g.rotation.y = STANDS[zoneId].face
     } else if (route.length) {
       const k = slot(journey), p = route[k]
-      if (k > lastSlot.current) play('dash') // une fois par téléportation
+      if (k > lastSlot.current) {
+        // une fois par téléportation : son + effets (CameraRig, Effects, ui/SpeedLines)
+        play('dash')
+        useScene.setState({ hopAt: performance.now() })
+      }
       lastSlot.current = k
       g.position.copy(p.pos)
       g.rotation.y = p.rot

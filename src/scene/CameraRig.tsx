@@ -73,6 +73,10 @@ const advance = (d: number) => {
 
 // Les changements de plan se font sous le balayage du Menu : coupe franche, pas de vol de caméra.
 let cut = true
+
+const SHAKE = 0.5 // amplitude de la secousse au pic (m)
+const SHAKE_S = 0.25
+const shake = new Vector3()
 useScene.subscribe((s, prev) => {
   if (s.mode !== prev.mode || s.dashing !== prev.dashing) cut = true
   if (s.zoneId !== prev.zoneId) tween?.stop() // sinon un tween en cours écraserait le reset à 0 du menu
@@ -107,7 +111,8 @@ export default function CameraRig() {
   }, [])
 
   useFrame(({ camera, clock }, dt) => {
-    const { mode, zoneId, scrollProgress, isTransitioning, dashing, journey } = useScene.getState()
+    camera.position.sub(shake) // retire la secousse de la frame précédente avant de viser
+    const { mode, zoneId, scrollProgress, isTransitioning, dashing, journey, hopAt } = useScene.getState()
     const r = mode === 'zone' && zoneId ? RAILS[zoneId] : null
     if (r && dashing) {
       heroAt(journey, lookTarget)
@@ -134,6 +139,10 @@ export default function CameraRig() {
       easing.damp3(camera.position, target, lag, dt)
       easing.damp3(look, lookTarget, lag, dt)
     }
+    // secousse brève à chaque téléportation (Hero), qui s'amortit en SHAKE_S
+    const k = Math.max(0, 1 - (performance.now() - hopAt) / 1000 / SHAKE_S) ** 2
+    shake.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(SHAKE * k)
+    camera.position.add(shake)
     camera.lookAt(look)
 
     const moving = camera.position.distanceTo(target) > 0.5

@@ -18,6 +18,7 @@ export const SOUNDS = {
   // Trajet du perso (Hero)
   dash: { src: '', volume: 0.5 }, // chaque téléportation
   arrive: { src: '', volume: 0.6 }, // arrivée dans le quartier, sous le 2e balayage
+  stamp: { src: '', volume: 0.7 }, // le titre du quartier tombe en tampon (impact)
 
   // Projets : distributeur
   machineButton: { src: '', volume: 0.6 }, // touche du distributeur pressée

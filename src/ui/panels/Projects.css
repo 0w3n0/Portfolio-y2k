@@ -127,3 +127,21 @@
   font-size: 0.75em;
   opacity: 0.8;
 }
+
+/* Éclats de vitre à l'ouverture de la fiche (ui/panels/Projects : CRACK, SHARDS) */
+.shards > span {
+  position: absolute;
+  top: var(--space-12);
+  left: var(--space-16);
+  width: var(--space-8);
+  height: var(--space-12);
+  pointer-events: none;
+  background: var(--chrome);
+  clip-path: polygon(50% 0, 100% 70%, 20% 100%);
+}
+.shards > span:nth-child(2n) {
+  background: var(--lavender);
+}
+.shards > span:nth-child(3) {
+  background: var(--pop-pink);
+}

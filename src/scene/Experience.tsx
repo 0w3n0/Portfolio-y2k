@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import CameraRig from './CameraRig'
 import City from './City'
+import Effects from './Effects'
 import Hero from './Hero'
 import About from './zones/About'
 import Contact from './zones/Contact'
@@ -27,6 +28,7 @@ export default function Experience() {
         <Skills />
         <About />
         <Contact />
+        <Effects />
       </Canvas>
     </div>
   )

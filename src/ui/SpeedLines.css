@@ -1,0 +1,11 @@
+/* Rayons fins autour du centre (deux périodes pour casser la régularité), effacés au milieu de l'écran */
+.speedlines {
+  position: fixed;
+  z-index: 4;
+  inset: -10%;
+  pointer-events: none;
+  background:
+    repeating-conic-gradient(from 0deg, var(--lavender) 0deg 0.5deg, transparent 0.5deg 7deg),
+    repeating-conic-gradient(from 3deg, var(--chrome) 0deg 0.3deg, transparent 0.3deg 11deg);
+  mask-image: radial-gradient(circle, transparent 38%, #000 78%);
+}

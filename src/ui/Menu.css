@@ -80,6 +80,49 @@
 .menu-item:focus-visible {
   box-shadow: var(--focus-ring);
 }
+/* Survol : l'aplat tressaute et un éclat rose claque derrière (Persona) ; `translate` ne touche pas au biais */
+.menu-item::after {
+  content: '';
+  position: absolute;
+  inset: -20% 40% -20% -8%;
+  z-index: -2;
+  background: var(--pop-pink);
+  clip-path: polygon(0 45%, 100% 0, 65% 100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.menu-item:hover::after,
+.menu-item:focus-visible::after {
+  animation: menu-shard 0.25s ease-out;
+}
+.menu-item:hover::before,
+.menu-item:focus-visible::before {
+  animation: menu-jolt 0.18s linear;
+}
+@keyframes menu-shard {
+  30% {
+    opacity: 1;
+    scale: 1.05;
+  }
+  from {
+    scale: 0.6;
+  }
+  to {
+    opacity: 0;
+    scale: 1.15;
+  }
+}
+@keyframes menu-jolt {
+  25% {
+    translate: calc(var(--space-1) * -1) 1px;
+  }
+  50% {
+    translate: var(--space-1) -1px;
+  }
+  75% {
+    translate: -1px 0;
+  }
+}
 
 /* Image d'arrivée à droite : trois couches au même éclat, décalées vers la gauche (encre → lavande → image) */
 .hero-art {
@@ -189,7 +232,31 @@
   background: var(--lavender);
 }
 .swipe-ground {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--ground);
+}
+/* Clic sur une catégorie : flash chrome (Y2K) avant le balayage */
+.swipe-flash {
+  position: absolute;
+  inset: 0;
+  background: var(--chrome);
+}
+/* Nom du quartier sur la bande sombre, en affiche Persona : biais, lavande, ombre décalée rose */
+.swipe-label-track {
+  display: inline-block; /* x de motion = transform : ignoré sur un élément inline */
+}
+.swipe-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 20vw, 22rem);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--lavender);
+  text-shadow: var(--space-3) var(--space-3) 0 var(--pop-pink);
+  transform: skewX(calc(var(--cut) * -1)) rotate(-4deg);
 }
 .swipe-fade {
   position: fixed;
@@ -204,5 +271,9 @@
   .menu-item::before,
   .back {
     transition: none;
+  }
+  .menu-item::before,
+  .menu-item::after {
+    animation: none !important; /* bat les :hover, plus spécifiques */
   }
 }
