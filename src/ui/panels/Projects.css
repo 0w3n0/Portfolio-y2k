@@ -1,19 +1,43 @@
-/* Clavier du distributeur (bas gauche) + fiche projet (droite) */
-.keypad,
-.project-panel {
+/* Encart projets (droite) : couches décalées comme .hero-art (Menu.css), forme = carte inclinée à coin coupé */
+.projects-card {
+  --card: polygon(14% 0, 100% 0, 100% 100%, 0 100%, 6% 8%);
   position: fixed;
   z-index: 10;
+  top: 12vh;
+  right: 0;
+  bottom: 4vh;
+  width: min(40vw, 640px);
   text-transform: uppercase;
 }
+.projects-card > div {
+  position: absolute;
+  inset: 0;
+  clip-path: var(--card);
+}
+.projects-card-ink {
+  background: var(--ink);
+  transform: translate(calc(var(--space-8) * -1), var(--space-4));
+}
+.projects-card-lav {
+  background: var(--lavender);
+  transform: translate(calc(var(--space-4) * -1), var(--space-2));
+}
+.projects-card-slab {
+  padding: var(--space-12) var(--space-8) var(--space-8) var(--space-16);
+  overflow-y: auto;
+  color: var(--ink);
+  background: var(--slab);
+}
+
 .keypad button,
-.project-panel button,
-.project-panel a {
+.projects-card button,
+.projects-card a {
   all: unset;
   cursor: pointer;
 }
 .keypad button:focus-visible,
-.project-panel button:focus-visible,
-.project-panel a:focus-visible {
+.projects-card button:focus-visible,
+.projects-card a:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
@@ -22,21 +46,25 @@
   color: var(--pop-pink);
 }
 
+/* Clavier du distributeur : fixe en bas à gauche */
 .keypad {
+  position: fixed;
+  z-index: 10;
   left: 3vw;
   bottom: 5vh;
   transform: rotate(-4deg);
+  text-transform: uppercase;
 }
 .keypad ul {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.35rem;
+  gap: var(--space-2);
 }
 .keypad button {
   display: block;
-  padding: 0.3em 1.2em 0.3em 0.6em;
+  padding: var(--space-1) var(--space-6) var(--space-1) var(--space-3);
   font-family: var(--font-display);
   font-size: 1.4rem;
   color: var(--ink);
@@ -48,57 +76,53 @@
 .keypad button[aria-pressed='true'] {
   background: var(--lavender);
   color: var(--on-lavender);
-  transform: translateX(0.6rem);
+  transform: translateX(var(--space-3));
 }
 .keypad button[aria-pressed='true'] .code,
 .keypad button:hover .code {
   color: var(--on-pop);
 }
 
-.project-panel {
-  top: 14vh;
-  right: 0;
-  width: min(32rem, 90vw);
-  padding: 2rem 2.5rem 2rem 4rem;
-  color: var(--ink);
-  background: var(--slab);
-  clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
-  box-shadow: -10px 10px 0 var(--lavender);
+/* Fiche du projet choisi */
+.project-hint {
+  margin: 0;
+  font-family: var(--font-mono);
+  opacity: 0.6;
 }
-.project-panel .code {
+.project-detail .code {
   font-size: 2rem;
 }
-.project-panel h2 {
-  margin: 0 0 0.5rem;
+.project-detail h2 {
+  margin: 0 0 var(--space-2);
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(2.5rem, 4vw, 4rem);
   font-weight: 400;
   line-height: 0.95;
 }
-.project-panel .meta {
+.project-detail .meta {
   color: var(--pop-pink);
   font-weight: 700;
 }
-.project-panel p {
+.project-detail p {
   text-transform: none;
 }
-.project-panel a,
-.project-panel .close {
+.project-detail a,
+.project-detail .close {
   display: inline-block;
-  margin: 1rem 1rem 0 0;
-  padding: 0.4em 0.8em;
+  margin: var(--space-4) var(--space-4) 0 0;
+  padding: var(--space-2) var(--space-3);
   font-family: var(--font-display);
   font-size: 1.1rem;
 }
-.project-panel a {
+.project-detail a {
   background: var(--lavender);
   color: var(--on-lavender);
 }
-.project-panel .close {
+.project-detail .close {
   border: 2px solid var(--ink);
 }
-.project-panel kbd {
-  margin-left: 0.4em;
+.project-detail kbd {
+  margin-left: var(--space-2);
   font-family: var(--font-body);
   font-size: 0.75em;
   opacity: 0.8;

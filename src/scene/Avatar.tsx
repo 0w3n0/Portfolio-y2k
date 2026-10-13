@@ -1,6 +1,8 @@
 import { Outlines } from '@react-three/drei'
 import { useLayoutEffect, useRef, type ComponentProps, type ReactNode, type Ref } from 'react'
-import { Object3D, Vector3, type Group, type InstancedMesh } from 'three'
+import { BoxGeometry, BufferGeometry, CapsuleGeometry, Euler, Matrix4, Object3D, SphereGeometry, Vector3, type Group, type InstancedMesh } from 'three'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import type { V3 } from './City'
 import { toonGradient } from './toon'
 import { C } from '../tokens'
 
@@ -85,3 +87,21 @@ export default function Avatar({ rightArm, ...props }: { rightArm?: Ref<Group> }
     </group>
   )
 }
+
+// Bras droit tendu vers -x, pour prendre appui sur la façade (dashs, Hero).
+export const WALL_ARM = -1.5
+
+// Même silhouette d'un seul tenant, en pose « appui au mur » : hologrammes des dashs (Hero), 1 draw call pour tous.
+export const ghostGeometry = (() => {
+  const at = (g: BufferGeometry, [x, y, z]: V3, hang = 0, rx = 0, rz = 0) =>
+    g.translate(0, -hang, 0).applyMatrix4(new Matrix4().makeRotationFromEuler(new Euler(rx, 0, rz))).translate(x, y, z)
+  const g = mergeGeometries([
+    at(new BoxGeometry(0.16, 0.85, 0.18), [-0.1, 0.85, 0], 0.425, 0, -0.3), // jambes écartées
+    at(new BoxGeometry(0.16, 0.85, 0.18), [0.1, 0.85, 0], 0.425, 0, 0.3),
+    at(new BoxGeometry(0.44, 0.6, 0.24), [0, 1.15, 0]),
+    at(new CapsuleGeometry(0.065, 0.45, 4, 8), [-0.3, 1.4, 0], 0.28, 0, WALL_ARM), // main sur le mur
+    at(new CapsuleGeometry(0.065, 0.45, 4, 8), [0.3, 1.4, 0], 0.28, 0.9), // bras gauche lancé en arrière
+    at(new SphereGeometry(0.24, 12, 8), [0, HEAD_Y, 0]), // tête + cheveux
+  ])
+  return g.rotateX(0.2) // penché en avant, prêt à rebondir
+})()

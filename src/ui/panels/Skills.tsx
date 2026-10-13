@@ -29,7 +29,7 @@ function Gauge({ name, lv, max }: { name: string; lv: number; max: number }) {
 // Écran de perso façon HSR : le perso 3D (Hero) à gauche, fiche à onglets à droite.
 // La fiche glisse quand il a appuyé sur la borne (scene/zones/Skills), d'où le délai = pic du geste.
 export default function SkillsPanel() {
-  const arrived = useScene((s) => s.journey >= 1)
+  const arrived = useScene((s) => !s.dashing)
   const reduced = useReducedMotion()
   const [tab, setTab] = useState(0)
 

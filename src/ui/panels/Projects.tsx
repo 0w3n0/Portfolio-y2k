@@ -3,7 +3,8 @@ import { PROJECTS, projectCode } from '../../data/projects'
 import { useScene } from '../../store/useScene'
 import './Projects.css'
 
-// Clavier du distributeur = liste accessible des projets (même effet qu'un clic sur le produit 3D).
+// Encart de droite, même construction que .hero-art (couches encre / lavande / dalle) mais en carte inclinée.
+// Le clavier du distributeur reste fixe en bas à gauche (liste accessible, même effet qu'un clic sur le produit 3D) ; seul l'encart change.
 export default function ProjectsPanel() {
   const projectId = useScene((s) => s.projectId)
   const reduced = useReducedMotion()
@@ -24,34 +25,44 @@ export default function ProjectsPanel() {
         </ul>
       </nav>
 
-      <AnimatePresence>
-        {p && (
-          <motion.aside
-            key={p.id}
-            className="project-panel"
-            aria-label={p.title}
-            // délai = le temps que le produit tombe dans le bac
-            initial={reduced ? { opacity: 0 } : { x: '110%' }}
-            animate={reduced ? { opacity: 1 } : { x: 0, transition: { delay: 0.35, duration: 0.45, ease: [0.76, 0, 0.24, 1] } }}
-            exit={reduced ? { opacity: 0 } : { x: '110%', transition: { duration: 0.3 } }}
-          >
-            <span className="code">{projectCode(i)}</span>
-            <h2>{p.title}</h2>
-            <p className="meta">
-              {p.year} — {p.tags.join(' / ')}
-            </p>
-            <p>{p.description}</p>
-            {p.url && (
-              <a href={p.url} target="_blank" rel="noreferrer">
-                Voir le projet ↗
-              </a>
+      <aside className="projects-card" aria-label="Fiche projet">
+        <div className="projects-card-ink" />
+        <div className="projects-card-lav" />
+        <div className="projects-card-slab">
+          <AnimatePresence mode="wait">
+            {p ? (
+              <motion.section
+                key={p.id}
+                className="project-detail"
+                aria-live="polite"
+                // délai = le temps que le produit tombe dans le bac
+                initial={reduced ? { opacity: 0 } : { opacity: 0, x: 40 }}
+                animate={reduced ? { opacity: 1 } : { opacity: 1, x: 0, transition: { delay: 0.35, duration: 0.35, ease: [0.76, 0, 0.24, 1] } }}
+                exit={reduced ? { opacity: 0 } : { opacity: 0, x: 40, transition: { duration: 0.2 } }}
+              >
+                <span className="code">{projectCode(i)}</span>
+                <h2>{p.title}</h2>
+                <p className="meta">
+                  {p.year} — {p.tags.join(' / ')}
+                </p>
+                <p>{p.description}</p>
+                {p.url && (
+                  <a href={p.url} target="_blank" rel="noreferrer">
+                    Voir le projet ↗
+                  </a>
+                )}
+                <button className="close" onClick={() => useScene.setState({ projectId: null })}>
+                  Fermer <kbd>Échap</kbd>
+                </button>
+              </motion.section>
+            ) : (
+              <motion.p key="hint" className="project-hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                Choisis un produit
+              </motion.p>
             )}
-            <button className="close" onClick={() => useScene.setState({ projectId: null })}>
-              Fermer <kbd>Échap</kbd>
-            </button>
-          </motion.aside>
-        )}
-      </AnimatePresence>
+          </AnimatePresence>
+        </div>
+      </aside>
     </>
   )
 }

@@ -19,8 +19,7 @@ const rail = ([x, , z]: V3): Rail => ({
 
 // Vue plongeante sur le centre, le perso (Hero) au premier plan à droite ; le brouillard estompe les bords.
 const OVERVIEW = { pos: [30, 14, 22] as V3, look: [0, 2, 0] as V3 }
-const FOLLOW = new Vector3(6, 4, 6) // caméra de poursuite pendant le trajet du perso : décalage = milieu de rue
-const CRUISE = 20 // au-dessus du plus haut toit (City) : les vols entre quartiers passent par les airs
+const ABOVE = new Vector3(0, 22, 8) // pendant les dashs du perso : vue plongeante qui survole la ville, au-dessus des toits (≤ 16 m)
 
 // Point 0 de chaque rail = plan d'arrivée dans la zone.
 const RAILS = Object.fromEntries(Object.entries(SPOTS).map(([id, p]) => [id, rail(p)])) as Record<ZoneId, Rail>
@@ -64,21 +63,22 @@ const scrollTo = (to: number, duration = 1) => {
   tween = animate(from, to, { duration, ease: [0.76, 0, 0.24, 1], onUpdate: (v) => useScene.setState({ scrollProgress: v }) })
 }
 
-// Règle 1 : scroll ignoré hors zone. Le reset à 0 est fait par le menu.
+// Règle 1 : scroll ignoré hors zone (et pendant les dashs). Le reset à 0 est fait par le menu.
 const advance = (d: number) => {
-  const { mode, scrollProgress } = useScene.getState()
-  if (mode !== 'zone' || !d) return
+  const { mode, scrollProgress, dashing } = useScene.getState()
+  if (mode !== 'zone' || dashing || !d) return
   tween?.stop()
   useScene.setState({ scrollProgress: MathUtils.clamp(scrollProgress + d, 0, 1) })
 }
 
-let flying = false // vol entre quartiers en cours (≠ glissement sur le rail)
+// Les changements de plan se font sous le balayage du Menu : coupe franche, pas de vol de caméra.
+let cut = true
 useScene.subscribe((s, prev) => {
-  if (s.zoneId !== prev.zoneId) {
-    flying = true
-    tween?.stop() // sinon un tween en cours écraserait le reset à 0 du menu
-    if (s.zoneId === 'contact') scrollTo(1) // zoom sur le téléphone dès l'arrivée
-  } else if (s.zoneId === 'projects' && !!s.projectId !== !!prev.projectId) scrollTo(s.projectId ? 1 : 0) // ouvrir → 1, fermer (Échap) → 0
+  if (s.mode !== prev.mode || s.dashing !== prev.dashing) cut = true
+  if (s.zoneId !== prev.zoneId) tween?.stop() // sinon un tween en cours écraserait le reset à 0 du menu
+  const arrived = s.mode === 'zone' && !s.dashing && (prev.dashing || prev.mode !== 'zone')
+  if (arrived && s.zoneId === 'contact') scrollTo(1) // zoom sur le téléphone dès l'arrivée
+  else if (s.zoneId === 'projects' && !!s.projectId !== !!prev.projectId) scrollTo(s.projectId ? 1 : 0) // ouvrir → 1, fermer (Échap) → 0
 })
 
 export default function CameraRig() {
@@ -107,14 +107,11 @@ export default function CameraRig() {
   }, [])
 
   useFrame(({ camera, clock }, dt) => {
-    const { mode, zoneId, scrollProgress, isTransitioning } = useScene.getState()
+    const { mode, zoneId, scrollProgress, isTransitioning, dashing, journey } = useScene.getState()
     const r = mode === 'zone' && zoneId ? RAILS[zoneId] : null
-    const { journey } = useScene.getState()
-    const follow = mode === 'zone' && journey < 1
-    if (follow) {
+    if (r && dashing) {
       heroAt(journey, lookTarget)
-      target.copy(lookTarget).add(FOLLOW)
-      lookTarget.y += 1
+      target.copy(lookTarget).add(ABOVE)
     } else if (r) {
       r.pos.getPoint(scrollProgress, target)
       r.look.getPoint(scrollProgress, lookTarget)
@@ -123,8 +120,8 @@ export default function CameraRig() {
       lookTarget.set(...OVERVIEW.look)
     }
 
-    if (reducedMotion) {
-      // coupe directe
+    if (reducedMotion || cut) {
+      cut = false
       camera.position.copy(target)
       look.copy(lookTarget)
     } else {
@@ -133,13 +130,9 @@ export default function CameraRig() {
         target.x += Math.sin(t * 0.3) * 0.6
         target.y += Math.sin(t * 0.5) * 0.25
       }
-      // Loin de la cible : on monte d'abord au-dessus des toits, on redescend à la verticale de l'arrivée.
-      if (follow || Math.hypot(target.x - camera.position.x, target.z - camera.position.z) < 1.5) flying = false
-      if (flying) target.y = Math.max(target.y, CRUISE)
-      easing.damp(camera.position, 'x', target.x, 0.8, dt)
-      easing.damp(camera.position, 'z', target.z, 0.8, dt)
-      easing.damp(camera.position, 'y', target.y, 0.35, dt)
-      easing.damp3(look, lookTarget, 0.8, dt)
+      const lag = dashing ? 0.25 : 0.8 // dashs : suivre de près, mais lisser le zigzag
+      easing.damp3(camera.position, target, lag, dt)
+      easing.damp3(look, lookTarget, lag, dt)
     }
     camera.lookAt(look)
 

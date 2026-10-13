@@ -22,22 +22,38 @@ const FADE_S = 0.3 // fondu 150 ms aller + 150 ms retour
 export default function Menu() {
   const mode = useScene((s) => s.mode)
   const zoneId = useScene((s) => s.zoneId)
+  const dashing = useScene((s) => s.dashing)
   const reduced = useReducedMotion()
   const [swipe, setSwipe] = useState(0) // clé du balayage en cours, 0 = aucun
   const busy = useRef(false)
 
-  // Le store change quand la bande couvre l'écran (mi-parcours) → la caméra part, l'UI change à l'abri.
-  const go = (zone: ZoneId | null) => {
-    if (busy.current) return // pas isTransitioning : le rig sait changer de cible en plein vol
+  // Le store change quand la bande couvre l'écran (mi-parcours) → la caméra coupe, l'UI change à l'abri.
+  const swipeThen = (atMid: () => void) => {
+    if (busy.current) return
     busy.current = true
     setSwipe(Date.now())
     const total = reduced ? FADE_S : SWIPE_S + 0.08
-    setTimeout(() => {
-      useScene.setState(
-        zone ? { mode: 'zone', zoneId: zone, scrollProgress: 0, projectId: null } : { mode: 'overview', zoneId: null, scrollProgress: 0, projectId: null },
-      )
-    }, (total / 2) * 1000)
+    setTimeout(atMid, (total / 2) * 1000)
   }
+
+  // Aller : balayage → dashs vus d'en haut (Hero) → balayage → zone. Sans animations : directement la zone.
+  const go = (zone: ZoneId | null) =>
+    swipeThen(() =>
+      useScene.setState(
+        zone
+          ? { mode: 'zone', zoneId: zone, scrollProgress: 0, projectId: null, dashing: !reduced, journey: 0 }
+          : { mode: 'overview', zoneId: null, scrollProgress: 0, projectId: null, dashing: false },
+      ),
+    )
+
+  // Fin des dashs → second balayage, qui révèle la zone.
+  useEffect(
+    () =>
+      useScene.subscribe((s, prev) => {
+        if (s.dashing && s.journey >= 1 && prev.journey < 1) swipeThen(() => useScene.setState({ dashing: false }))
+      }),
+    [], // swipeThen ne lit que des refs et setSwipe : un seul abonnement suffit
+  )
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -73,7 +89,7 @@ export default function Menu() {
             </ul>
           </nav>
           {/* Image d'arrivée : couches décalées encre / lavande / image, bord gauche en éclat façon Persona.
-              Elle cache le perso 3D (Hero) posé derrière ; au clic, le balayage l'enlève et le perso part en sautant. */}
+              Elle cache le perso 3D (Hero) posé derrière ; au clic, le balayage l'enlève et le perso part en dashant. */}
           <figure className="hero-art" aria-hidden>
             <div className="hero-art-ink" />
             <div className="hero-art-lav" />
@@ -88,10 +104,10 @@ export default function Menu() {
               <span>← Retour <kbd>Échap</kbd></span>
             </button>
           </div>
-          {zoneId === 'projects' && <ProjectsPanel />}
-          {zoneId === 'skills' && <SkillsPanel />}
-          {zoneId === 'about' && <AboutPanel />}
-          {zoneId === 'contact' && <ContactPanel />}
+          {!dashing && zoneId === 'projects' && <ProjectsPanel />}
+          {!dashing && zoneId === 'skills' && <SkillsPanel />}
+          {!dashing && zoneId === 'about' && <AboutPanel />}
+          {!dashing && zoneId === 'contact' && <ContactPanel />}
         </>
       )}
 

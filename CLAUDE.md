@@ -29,11 +29,11 @@ src/
 
 ## Règles d'interaction (cœur du concept)
 1. Arrivée : vue d'ensemble, caméra en idle léger, **scroll désactivé**.
-2. Clic sur une catégorie du menu → transition balayage (DOM) + vol caméra vers la zone → `mode = 'zone'`.
+2. Clic sur une catégorie du menu → balayage (DOM) → `mode = 'zone'`, `dashing` : téléportations du perso vues de haut → 2ᵉ balayage → coupe directe sur la zone (règle 6).
 3. En zone : le scroll fait avancer la caméra sur un rail (CatmullRomCurve3 propre à la zone), via `scrollProgress` 0→1.
-4. Retour (Échap / bouton) → caméra revient en overview, scroll de nouveau bloqué.
+4. Retour (Échap / bouton) → balayage + coupe directe en overview, scroll de nouveau bloqué.
 5. Zones = quartiers de la ville : **Projets = distributeur automatique au coin d'une rue** (chaque projet = un produit, clic = il tombe → panel), **Skills = fiche perso HSR** : le perso 3D en pied à gauche appuie sur une borne, la fiche (onglets Stats / Compétences / Équipement, `ui/panels/Skills.tsx`) glisse à droite ; accent menthe, About, Contact.
-6. **Cible finale — le perso d'Owen (`scene/Hero.tsx`) fait le voyage** : en overview l'**image à droite** (`.hero-art` du Menu, à garder) le montre, le perso 3D attend derrière, au premier plan ; au clic, le balayage habituel enlève l'image et il part **en sautant d'immeuble en immeuble**, la caméra le suit, **jamais de caméra qui traverse un immeuble**. Projets : il finit devant le distributeur et **appuie sur le projet choisi** avant que le produit tombe. Skills : il appuie sur une borne et les skills apparaissent autour de lui (pas d'avatar fixe dans Skills). Fait : trajets toit à toit vers les 4 quartiers depuis n'importe où (BFS dans `Hero.tsx`), avatar en primitives ; à faire : vraie anim (.glb), lien image 2D → perso 3D.
+6. **Cible finale — le perso d'Owen (`scene/Hero.tsx`) fait le voyage** : en overview l'**image à droite** (`.hero-art` du Menu, à garder) le montre, le perso 3D attend derrière, au premier plan ; au clic, le balayage enlève l'image, il **se téléporte en zigzag de façade en façade** dans les rues (≥ 3 sauts, ~2 s), une traînée lavande unique entre deux points, un **hologramme lavande en pose d'appui au mur** reste à chaque point quitté, caméra **vue de haut**, puis 2ᵉ balayage et **coupe directe** sur la zone (pas de chemin caméra) ; retour : coupe directe sur son toit. Projets : il finit devant le distributeur et **appuie sur le projet choisi** avant que le produit tombe. Skills : il appuie sur une borne et les skills apparaissent autour de lui (pas d'avatar fixe dans Skills). Fait : téléportations + hologrammes dans les rues depuis son toit (`plan()` dans `Hero.tsx`), avatar en primitives ; à faire : vraie anim (.glb), lien image 2D → perso 3D.
 7. Les avatars hyperpop traînent dans les quartiers (sur un toit, contre un mur tagué…) comme habitants de la ville.
 
 ## Direction artistique
