@@ -32,14 +32,19 @@ src/
 2. Clic sur une catégorie du menu → transition balayage (DOM) + vol caméra vers la zone → `mode = 'zone'`.
 3. En zone : le scroll fait avancer la caméra sur un rail (CatmullRomCurve3 propre à la zone), via `scrollProgress` 0→1.
 4. Retour (Échap / bouton) → caméra revient en overview, scroll de nouveau bloqué.
-5. Zones = quartiers de la ville : **Projets = distributeur automatique au coin d'une rue** (chaque projet = un produit, clic = il tombe → panel), **Skills = écran de perso façon HSR/Genshin** (stats, niveaux, "équipement"), About, Contact.
-6. Les avatars hyperpop traînent dans les quartiers (sur un toit, contre un mur tagué…) comme habitants de la ville.
+5. Zones = quartiers de la ville : **Projets = distributeur automatique au coin d'une rue** (chaque projet = un produit, clic = il tombe → panel), **Skills = fiche perso HSR** : le perso 3D en pied à gauche appuie sur une borne, la fiche (onglets Stats / Compétences / Équipement, `ui/panels/Skills.tsx`) glisse à droite ; accent menthe, About, Contact.
+6. **Cible finale — le perso d'Owen (`scene/Hero.tsx`) fait le voyage** : en overview l'**image à droite** (`.hero-art` du Menu, à garder) le montre, le perso 3D attend derrière, au premier plan ; au clic, le balayage habituel enlève l'image et il part **en sautant d'immeuble en immeuble**, la caméra le suit, **jamais de caméra qui traverse un immeuble**. Projets : il finit devant le distributeur et **appuie sur le projet choisi** avant que le produit tombe. Skills : il appuie sur une borne et les skills apparaissent autour de lui (pas d'avatar fixe dans Skills). Fait : trajets toit à toit vers les 4 quartiers depuis n'importe où (BFS dans `Hero.tsx`), avatar en primitives ; à faire : vraie anim (.glb), lien image 2D → perso 3D.
+7. Les avatars hyperpop traînent dans les quartiers (sur un toit, contre un mur tagué…) comme habitants de la ville.
 
 ## Direction artistique
-- Brutalisme Persona : aplats, diagonales, typo massive en capitales, contrastes durs, découpes en biais.
-- Palette de base : noir #0A0A0A, blanc cassé #F2F0EA, accent rouge #E5002B + 1 accent hyperpop (rose #FF3EA5 ou vert acide #B6FF00) — un seul à la fois par écran.
+**Source de vérité : `design-system/`.** Lire `design-system/README.md` avant tout travail d'UI ou de couleur. Ne jamais écrire une couleur, une police ou un espacement en dur : utiliser les variables de `design-system/tokens.css` (importé une fois dans `src/main.tsx`). Pour changer une valeur, modifier `tokens.json` puis régénérer `tokens.css`, jamais l'inverse.
+- Résumé : brutalisme Persona en pastel. Lavande `--lavender` en couleur principale, accents `--pop-pink` / `--pop-mint` (un seul par écran), `--chrome` pour le Y2K, fonds `--ground` / `--slab` presque noirs. Texte foncé sur les pastels, jamais blanc.
+- Typo : Anton (affiche, capitales), Archivo (texte), JetBrains Mono (UI de jeu). Polices locales dans `design-system/fonts/`.
+- Thème Nuit par défaut (`data-theme="nuit"` sur `<html>`), Jour pour la lecture longue.
+- Composants de référence : `design-system/components/od-components.css` (bouton en biais, entrée de menu, slot du distributeur, jauge de stat, sticker) — à porter en composants React dans `src/ui/`.
+- Logos SVG dans `design-system/logos/` (usage dans son README).
 - Y2K : chrome, bulles/stickers, bruit/scanlines en post-process (léger).
-- Monde 3D façon BRC : cel-shading (`MeshToonMaterial` + gradient map 3–4 tons), contours noirs épais (`<Outlines>` de drei), couleurs saturées, ciel en aplat ou dégradé simple, pas de réalisme.
+- Monde 3D façon BRC : cel-shading (`MeshToonMaterial` + gradient map 3–4 tons), contours noirs épais (`<Outlines>` de drei), néons et enseignes dans les couleurs du design system, brouillard lavande sombre, pas de réalisme.
 - Ville : kit modulaire low-poly (immeubles, toits, rampes, escaliers, panneaux), tags et affiches originaux en textures/decals, brouillard coloré pour masquer le lointain.
 - Personnages hyperpop : **avatars stylisés originaux** dans leur esthétique (pas leur visage réel), low-poly cel-shadés ou en 2D billboard, poses fixes ou boucle d'animation courte.
 
@@ -67,5 +72,5 @@ Ponytail en niveau full par défaut ; « normal mode » pour les sessions d'appr
 - [x] Ville (quartiers compacts, pas de monde ouvert)
 - [x] Avatars hyperpop stylisés, pas de ressemblance réelle
 - [x] Monde 3D inspiré de Bomb Rush Cyberfunk
-- [ ] Menu skills HSR/Genshin : oui / non
+- [x] Skills : fiche perso HSR à onglets (constellation testée et rejetée : pas lisible)
 - [ ] Où mettre la touche Y2K (UI ? post-process ? objets de la scène ?)

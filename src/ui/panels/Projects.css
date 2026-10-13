@@ -14,7 +14,7 @@
 .keypad button:focus-visible,
 .project-panel button:focus-visible,
 .project-panel a:focus-visible {
-  outline: 4px solid var(--accent);
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
 .code {
@@ -39,19 +39,20 @@
   padding: 0.3em 1.2em 0.3em 0.6em;
   font-family: var(--font-display);
   font-size: 1.4rem;
-  color: var(--paper);
-  background: var(--ink);
+  color: var(--ink);
+  background: var(--slab);
   clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
   transition: transform 0.12s, background 0.12s;
 }
 .keypad button:hover,
 .keypad button[aria-pressed='true'] {
-  background: var(--accent);
+  background: var(--lavender);
+  color: var(--on-lavender);
   transform: translateX(0.6rem);
 }
 .keypad button[aria-pressed='true'] .code,
 .keypad button:hover .code {
-  color: var(--ink);
+  color: var(--on-pop);
 }
 
 .project-panel {
@@ -59,10 +60,10 @@
   right: 0;
   width: min(32rem, 90vw);
   padding: 2rem 2.5rem 2rem 4rem;
-  color: var(--paper);
-  background: var(--ink);
+  color: var(--ink);
+  background: var(--slab);
   clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
-  box-shadow: -10px 10px 0 var(--accent);
+  box-shadow: -10px 10px 0 var(--lavender);
 }
 .project-panel .code {
   font-size: 2rem;
@@ -75,7 +76,7 @@
   line-height: 0.95;
 }
 .project-panel .meta {
-  color: var(--pop-pink); /* rouge sur noir < AA */
+  color: var(--pop-pink);
   font-weight: 700;
 }
 .project-panel p {
@@ -90,10 +91,11 @@
   font-size: 1.1rem;
 }
 .project-panel a {
-  background: var(--accent);
+  background: var(--lavender);
+  color: var(--on-lavender);
 }
 .project-panel .close {
-  border: 2px solid var(--paper);
+  border: 2px solid var(--ink);
 }
 .project-panel kbd {
   margin-left: 0.4em;

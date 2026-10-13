@@ -1,0 +1,96 @@
+/* Implémentation de référence des composants du design system (préfixe od-). À porter en composants React dans src/ui/, pas à importer tel quel. */
+/* OWEN DONNARS — composants. Toutes les valeurs viennent de tokens.css. */
+body { margin: 0; font-family: var(--font-body); background: var(--ground); color: var(--ink); }
+.od-stage { display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: flex-start; padding: var(--space-6) var(--space-8); }
+.od-col { display: grid; gap: var(--space-4); padding: var(--space-6) var(--space-8); max-width: 520px; }
+
+/* SlabButton — la coupe en biais via skew, le libellé contre-penché */
+.od-btn {
+  font: 400 20px/1 var(--font-display); text-transform: uppercase; letter-spacing: .03em;
+  padding: 12px 28px; border: 3px solid var(--edge); border-radius: var(--radius-none);
+  background: var(--ground); color: var(--ink); cursor: pointer;
+  transform: skewX(calc(var(--cut) * -1)); box-shadow: var(--shadow-slab);
+  transition: transform .12s cubic-bezier(.76,0,.24,1), box-shadow .12s cubic-bezier(.76,0,.24,1);
+}
+.od-btn > span { display: inline-block; transform: skewX(var(--cut)); }
+.od-btn:hover { transform: skewX(calc(var(--cut) * -1)) translate(-4px, -4px); box-shadow: var(--shadow-slab-hover); }
+.od-btn:active { transform: skewX(calc(var(--cut) * -1)) translate(2px, 2px); box-shadow: none; }
+.od-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.od-btn-lavender { background: var(--lavender); color: var(--on-lavender); }
+
+/* MenuItem — l'entrée de menu Persona */
+.od-menu { list-style: none; margin: 0; padding: var(--space-6) var(--space-8); display: grid; gap: var(--space-1); }
+.od-mi {
+  position: relative; display: flex; align-items: baseline; gap: var(--space-4);
+  width: 100%; padding: 2px var(--space-6) 6px; border: 0; background: none; color: var(--ink);
+  text-align: left; cursor: pointer; isolation: isolate;
+  transition: transform .18s cubic-bezier(.76,0,.24,1), color .18s;
+}
+.od-mi::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 0; z-index: -1;
+  background: var(--lavender); transform: skewX(calc(var(--cut) * -1));
+  transition: width .22s cubic-bezier(.76,0,.24,1);
+}
+.od-mi-code { font: 700 12px/16px var(--font-mono); letter-spacing: .08em; color: var(--ink-muted); min-width: 4ch; }
+.od-mi-label { font: 400 64px/.95 var(--font-display); text-transform: uppercase; display: inline-block; transform: skewX(var(--tilt-type)); }
+.od-mi-hint { font: 700 12px/16px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); opacity: 0; transition: opacity .18s; }
+.od-mi:hover { color: var(--lavender-text); transform: translateX(var(--space-2)); }
+.od-mi:hover .od-mi-hint { opacity: 1; }
+.od-mi[aria-current="true"] { color: var(--on-lavender); transform: translateX(var(--space-4)); }
+.od-mi[aria-current="true"]::before { width: 100%; box-shadow: var(--shadow-slab); }
+.od-mi[aria-current="true"] .od-mi-code,
+.od-mi[aria-current="true"] .od-mi-hint { color: var(--on-lavender); opacity: 1; }
+.od-mi:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+/* StatGauge — la fiche de compétences façon RPG */
+.od-stat { display: grid; grid-template-columns: 1fr auto; gap: var(--space-2) var(--space-3); align-items: baseline; }
+.od-stat-name { font: 800 16px/20px var(--font-body); text-transform: uppercase; letter-spacing: .02em; }
+.od-stat-lv { font: 700 14px/20px var(--font-mono); color: var(--ink-muted); }
+.od-stat-lv b { color: var(--ink); }
+.od-stat-bar { grid-column: 1 / -1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; height: 14px; }
+.od-seg { background: var(--hairline); transform: skewX(calc(var(--cut) * -1)); }
+.od-seg-on { background: var(--meter); }
+.od-stat-rank { grid-column: 1 / -1; display: flex; gap: 5px; align-items: center; }
+.od-gem { width: 10px; height: 10px; border: 2px solid var(--lavender-text); transform: rotate(45deg); }
+.od-gem-on { background: var(--lavender-text); }
+.od-stat-rank span { font: 700 12px/16px var(--font-mono); letter-spacing: .08em; color: var(--ink-muted); margin-left: var(--space-2); }
+
+/* VendingSlot — un projet = un produit du distributeur */
+.od-slot {
+  display: grid; grid-template-rows: auto 1fr auto; width: 200px; min-height: 236px;
+  border: 3px solid var(--edge); background: var(--slab); color: var(--ink);
+  box-shadow: var(--shadow-slab); cursor: pointer; text-align: left; padding: 0; font: inherit;
+  transition: transform .12s cubic-bezier(.76,0,.24,1), box-shadow .12s cubic-bezier(.76,0,.24,1);
+}
+.od-slot:hover { transform: translate(-4px, -4px); box-shadow: var(--shadow-slab-hover); }
+.od-slot:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.od-slot-top { display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) var(--space-3); background: var(--chrome); color: var(--on-pop); font: 700 12px/16px var(--font-mono); letter-spacing: .08em; }
+.od-slot-code { padding: 0 6px; border-radius: var(--radius-key); background: var(--on-pop); color: var(--chrome); }
+.od-slot-body { padding: var(--space-4) var(--space-3); display: grid; align-content: end; gap: var(--space-2); }
+.od-slot-title { font: 400 30px/.95 var(--font-display); text-transform: uppercase; transform: skewX(var(--tilt-type)); transform-origin: left bottom; }
+.od-slot-meta { font: 500 13px/18px var(--font-body); color: var(--ink-muted); }
+.od-slot-foot { display: flex; justify-content: space-between; padding: var(--space-2) var(--space-3); border-top: 3px solid var(--edge); font: 700 12px/16px var(--font-mono); letter-spacing: .08em; }
+.od-slot-foot b { color: var(--lavender-text); }
+.od-slot[aria-pressed="true"] { box-shadow: var(--shadow-pop); transform: translate(-2px, -2px); }
+.od-slot[aria-pressed="true"] .od-slot-top { background: var(--pop-pink); }
+.od-slot-soon { cursor: default; }
+.od-slot-soon .od-slot-body {
+  background: repeating-linear-gradient(-78deg, transparent 0 14px, var(--hairline) 14px 17px);
+}
+.od-slot-soon .od-slot-title, .od-slot-soon .od-slot-meta { color: var(--ink-muted); }
+.od-slot-soon:hover { transform: none; box-shadow: var(--shadow-slab); }
+
+/* Sticker — la touche Y2K */
+.od-sticker {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 6px 14px; border-radius: var(--radius-bubble); border: 2px solid var(--on-pop);
+  font: 700 12px/16px var(--font-mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--on-pop); background: var(--pop-pink); transform: rotate(var(--tilt-sticker));
+}
+.od-sticker-flip { transform: rotate(calc(var(--tilt-sticker) * -1)); }
+.od-sticker-mint { background: var(--pop-mint); box-shadow: var(--shadow-pop); }
+.od-sticker-chrome { background: var(--chrome); }
+
+@media (prefers-reduced-motion: reduce) {
+  .od-btn, .od-mi, .od-mi::before, .od-slot { transition: none; }
+}

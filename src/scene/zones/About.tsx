@@ -6,6 +6,7 @@ import { TAGS } from '../../data/about'
 import { useScene } from '../../store/useScene'
 import { SPOTS } from '../City'
 import { toonGradient } from '../toon'
+import { C } from '../../tokens'
 
 const [X, , Z] = SPOTS.about
 const WALL_Z = Z - 3.2 // fond de la place, face au rail caméra (RAILS.about dans CameraRig)
@@ -19,12 +20,12 @@ const ctx = canvas.getContext('2d')!
 const tex = new CanvasTexture(canvas)
 tex.colorSpace = SRGBColorSpace
 
-// Mur de béton + bio en tags (contour épais, ombre décalée rouge).
+// Mur de béton + bio en tags (contour épais, ombre décalée lavande).
 function drawWall(ctx: CanvasRenderingContext2D) {
   ctx.globalAlpha = 1
-  ctx.fillStyle = '#C9C6BE'
+  ctx.fillStyle = C.slab
   ctx.fillRect(0, 0, PX, PY)
-  ctx.strokeStyle = '#B3B0A8'
+  ctx.strokeStyle = C.hairline
   ctx.lineWidth = 2
   for (let y = 64; y < PY; y += 64) ctx.strokeRect(-2, y, PX + 4, 0) // joints des parpaings
   ctx.textAlign = 'center'
@@ -37,10 +38,10 @@ function drawWall(ctx: CanvasRenderingContext2D) {
     ctx.rotate((t.rotate * Math.PI) / 180)
     ctx.font = `${s}px Anton, Impact, sans-serif`
     const txt = t.text.toUpperCase()
-    ctx.fillStyle = '#E5002B'
+    ctx.fillStyle = C.lavender
     ctx.fillText(txt, s * 0.06, s * 0.06)
     ctx.lineWidth = s * 0.14
-    ctx.strokeStyle = '#0A0A0A'
+    ctx.strokeStyle = C.ground
     ctx.strokeText(txt, 0, 0)
     ctx.fillStyle = t.fill
     ctx.fillText(txt, 0, 0)
@@ -93,8 +94,8 @@ export default function About() {
     <group position={[X, 0.2, WALL_Z]}>
       <mesh position-y={H / 2}>
         <boxGeometry args={[W + 0.3, H + 0.2, 0.3]} />
-        <meshToonMaterial color="#8F8C86" gradientMap={toonGradient} />
-        <Outlines thickness={0.05} color="#0A0A0A" />
+        <meshToonMaterial color={C.hairline} gradientMap={toonGradient} />
+        <Outlines thickness={0.05} color={C.ground} />
       </mesh>
       <mesh
         position={[0, H / 2, 0.16]}

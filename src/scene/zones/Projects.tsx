@@ -7,6 +7,7 @@ import { COLS, PROJECTS } from '../../data/projects'
 import { useScene } from '../../store/useScene'
 import { SPOTS } from '../City'
 import { toonGradient } from '../toon'
+import { C } from '../../tokens'
 
 const [X, , Z] = SPOTS.projects
 const WIN_X = -0.25 // centre de la vitre (le monnayeur est à droite)
@@ -42,35 +43,37 @@ function Product({ i }: { i: number }) {
       >
         <cylinderGeometry args={[0.1, 0.1, 0.28, 12]} />
         <meshToonMaterial color={p.color} gradientMap={toonGradient} />
-        <Outlines thickness={0.02} color="#0A0A0A" />
+        <Outlines thickness={0.02} color={C.ground} />
       </mesh>
     </group>
   )
 }
 
+export const MACHINE = { pos: [X - 2, 0.2, Z - 3] as [number, number, number], rotY: 1.15 }
+
 // Distributeur au bord de la place, tourné vers la fin du rail caméra (CameraRig).
 export default function Projects() {
   return (
-    <group position={[X - 2, 0.2, Z - 3]} rotation-y={1.15}>
+    <group position={MACHINE.pos} rotation-y={MACHINE.rotY}>
       <mesh position-y={1.3}>
         <boxGeometry args={[1.8, 2.6, 1]} />
-        <meshToonMaterial color="#E5002B" gradientMap={toonGradient} />
-        <Outlines thickness={0.04} color="#0A0A0A" />
+        <meshToonMaterial color={C.chrome} gradientMap={toonGradient} />
+        <Outlines thickness={0.04} color={C.ground} />
       </mesh>
       {/* vitre */}
       <mesh position={[WIN_X, 1.65, 0.505]}>
         <planeGeometry args={[1.2, 1.5]} />
-        <meshBasicMaterial color="#0A0A0A" />
+        <meshBasicMaterial color={C.ground} />
       </mesh>
       {/* bac de sortie */}
       <mesh position={[WIN_X, 0.42, 0.505]}>
         <planeGeometry args={[1.2, 0.35]} />
-        <meshBasicMaterial color="#0A0A0A" />
+        <meshBasicMaterial color={C.ground} />
       </mesh>
       {/* plaque du clavier (le vrai clavier est le panel DOM) */}
       <mesh position={[0.62, 1.7, 0.505]}>
         <planeGeometry args={[0.36, 0.7]} />
-        <meshBasicMaterial color="#F2F0EA" />
+        <meshBasicMaterial color={C.chrome} />
       </mesh>
       {PROJECTS.map((p, i) => (
         <Product key={p.id} i={i} />

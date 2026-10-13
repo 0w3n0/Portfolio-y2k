@@ -1,90 +1,172 @@
-/* Menu brutaliste — par-dessus le Canvas (fond --paper) */
+/* Menu brutaliste — par-dessus le Canvas. Valeurs : design-system/tokens.css, modèle : od-components.css */
 .menu,
-.zone-bar {
+.zone-bar,
+.lockup {
   position: fixed;
   z-index: 10;
-  font-family: var(--font-display);
-  text-transform: uppercase;
 }
 
+.lockup {
+  top: var(--space-8);
+  left: var(--space-8);
+  width: clamp(200px, 22vw, 340px);
+}
+
+/* Menu d'arrivée : escalier en diagonale, penché de --tilt-type */
 .menu {
   left: 4vw;
   bottom: 6vh;
-  transform: rotate(-6deg);
+  transform: rotate(var(--tilt-type));
   transform-origin: left bottom;
 }
 .menu ul {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  gap: var(--space-1);
 }
 .menu li {
-  margin-left: calc(var(--i) * 2.2vw); /* escalier en diagonale */
+  margin-left: calc(var(--i) * 2.2vw);
 }
 
 .menu-item {
   all: unset;
   cursor: pointer;
-  display: inline-block;
-  padding: 0.05em 0.4em 0.05em 0.25em;
-  font-size: clamp(3rem, 9vw, 8rem);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: 0 var(--space-8) var(--space-1) var(--space-4);
+  color: var(--ink);
+  transition: transform 0.18s cubic-bezier(0.76, 0, 0.24, 1), color 0.18s;
+}
+/* aplat coupé en biais derrière le libellé, pour rester lisible sur la ville */
+.menu-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--slab);
+  transform: skewX(calc(var(--cut) * -1));
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.menu-code {
+  font: 700 12px/16px var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+.menu-label {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 6.5rem);
   line-height: 0.95;
-  color: var(--paper);
-  background: var(--ink);
-  clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%);
-  transition: transform 0.15s, background 0.15s;
+  text-transform: uppercase;
 }
 .menu-item:hover,
 .menu-item:focus-visible {
-  background: var(--accent);
-  transform: translateX(1.2vw);
+  color: var(--on-lavender);
+  transform: translateX(var(--space-4));
+}
+.menu-item:hover::before,
+.menu-item:focus-visible::before {
+  background: var(--lavender);
+  box-shadow: var(--shadow-pop);
+}
+.menu-item:hover .menu-code,
+.menu-item:focus-visible .menu-code {
+  color: var(--on-lavender);
 }
 .menu-item:focus-visible {
-  outline: 6px solid var(--accent);
-  outline-offset: 4px;
-  clip-path: none; /* sinon le contour est découpé */
+  box-shadow: var(--focus-ring);
 }
 
+/* Image d'arrivée à droite : trois couches au même éclat, décalées vers la gauche (encre → lavande → image) */
+.hero-art {
+  --shard: polygon(24% 0, 100% 0, 100% 100%, 0 100%, 14% 56%);
+  position: fixed;
+  z-index: 5;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(46vw, 760px);
+  margin: 0;
+  pointer-events: none;
+}
+.hero-art > div {
+  position: absolute;
+  inset: 0;
+  clip-path: var(--shard);
+}
+.hero-art-ink {
+  background: var(--ink);
+  transform: translateX(calc(var(--space-8) * -1));
+}
+.hero-art-lav {
+  background: var(--lavender);
+  transform: translateX(calc(var(--space-4) * -1));
+}
+.hero-art-img {
+  background: var(--ground); /* fond noir en attendant l'image */
+}
+.hero-art-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* En zone : titre en aplat lavande + bouton retour en biais */
 .zone-bar {
-  top: 3vh;
-  left: 3vw;
+  top: var(--space-6);
+  left: var(--space-8);
   display: flex;
   align-items: flex-start;
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 .zone-title {
   margin: 0;
-  padding: 0 0.4em 0 0.2em;
+  padding: 0 var(--space-6) 0 var(--space-3);
+  font-family: var(--font-display);
   font-size: clamp(2.5rem, 6vw, 5rem);
   font-weight: 400;
   line-height: 1;
-  color: var(--paper);
-  background: var(--ink);
-  transform: rotate(-5deg);
+  text-transform: uppercase;
+  color: var(--on-lavender);
+  background: var(--lavender);
+  box-shadow: var(--shadow-pop);
+  transform: rotate(var(--tilt-type));
   clip-path: polygon(0 0, 100% 0, 93% 100%, 0 100%);
 }
 .back {
   all: unset;
   cursor: pointer;
-  padding: 0.4em 0.8em;
-  font-size: 1.25rem;
-  color: var(--paper);
-  background: var(--accent);
-  box-shadow: 6px 6px 0 var(--ink);
-  transition: transform 0.12s;
+  padding: var(--space-3) var(--space-6);
+  font: 400 20px/1 var(--font-display);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--ground);
+  border: 3px solid var(--edge);
+  box-shadow: var(--shadow-slab);
+  transform: skewX(calc(var(--cut) * -1));
+  transition: transform 0.12s cubic-bezier(0.76, 0, 0.24, 1), box-shadow 0.12s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.back > span {
+  display: inline-block;
+  transform: skewX(var(--cut));
 }
 .back:hover {
-  transform: translate(-2px, -2px);
+  transform: skewX(calc(var(--cut) * -1)) translate(-4px, -4px);
+  box-shadow: var(--shadow-slab-hover);
 }
 .back:focus-visible {
-  outline: 4px solid var(--ink);
-  outline-offset: 4px;
+  box-shadow: var(--focus-ring);
 }
 .back kbd {
-  margin-left: 0.5em;
-  font-family: var(--font-body);
-  font-size: 0.7em;
-  opacity: 0.8;
+  margin-left: var(--space-2);
+  font: 700 12px/16px var(--font-mono);
+  color: var(--ink-muted);
 }
 
 /* Balayage : bandes plus larges que l'écran pour le couvrir entièrement à mi-course */
@@ -103,16 +185,24 @@
   width: 200vw;
   clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
 }
-.swipe-red {
-  background: var(--accent);
+.swipe-lav {
+  background: var(--lavender);
 }
-.swipe-ink {
-  background: var(--ink);
+.swipe-ground {
+  background: var(--ground);
 }
 .swipe-fade {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: var(--ink);
+  background: var(--ground);
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item,
+  .menu-item::before,
+  .back {
+    transition: none;
+  }
 }

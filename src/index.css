@@ -1,19 +1,7 @@
-:root {
-  --ink: #0a0a0a;
-  --paper: #f2f0ea;
-  --accent: #e5002b;
-  --pop-pink: #ff3ea5;
-  --pop-acid: #b6ff00;
-  /* shortcut: polices système, charger Anton / Inter en self-host quand la DA sera figée */
-  --font-display: 'Anton', 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
-  --font-body: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
-
-  color-scheme: dark;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-body);
-}
-
+/* Couleurs et polices : design-system/tokens.css (importé avant ce fichier dans main.tsx) */
 body {
   margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
 }

@@ -1,0 +1,77 @@
+/* OWEN DONNARS — généré depuis tokens.json. Ne pas éditer à la main : modifier tokens.json. */
+@font-face { font-family: "Anton"; src: url("./fonts/Anton-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Archivo"; src: url("./fonts/Archivo-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("./fonts/JetBrainsMono-Variable.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+:root, [data-theme="nuit"] {
+  --ground: #0e0b14;
+  --slab: #1b1724;
+  --hairline: #363042;
+  --ink: #f4f1fa;
+  --ink-muted: #aaa3b8;
+  --edge: var(--ink);
+  --lavender: #b9a3ff;
+  --on-lavender: #120e1a;
+  --lavender-text: #c9b8ff;
+  --pop-pink: #ffadd6;
+  --pop-mint: #bff0b4;
+  --on-pop: #120e1a;
+  --chrome: #d3d8e3;
+  --sky: #0b1633;
+  --meter: var(--pop-mint);
+  --focus: #bff0b4;
+  --shadow-slab: 6px 6px 0 #b9a3ff;
+  --shadow-slab-hover: 10px 10px 0 #b9a3ff;
+  --shadow-pop: 4px 4px 0 #ffadd6;
+  --focus-ring: 0 0 0 3px #0e0b14, 0 0 0 6px #bff0b4;
+  color-scheme: dark;
+}
+[data-theme="jour"] {
+  --ground: #f5f2fa;
+  --slab: #e9e3f4;
+  --hairline: #cfc7de;
+  --ink: #120e1a;
+  --ink-muted: #5a5368;
+  --edge: var(--ink);
+  --lavender: #b9a3ff;
+  --on-lavender: #120e1a;
+  --lavender-text: #5e43c9;
+  --pop-pink: #ffadd6;
+  --pop-mint: #bff0b4;
+  --on-pop: #120e1a;
+  --chrome: #a9b0c0;
+  --sky: #c9d8f2;
+  --meter: var(--lavender-text);
+  --focus: #5e43c9;
+  --shadow-slab: 6px 6px 0 #120e1a;
+  --shadow-slab-hover: 10px 10px 0 #120e1a;
+  --shadow-pop: 4px 4px 0 #ffadd6;
+  --focus-ring: 0 0 0 3px #f5f2fa, 0 0 0 6px #5e43c9;
+  color-scheme: light;
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-none: 0px;
+  --radius-key: 4px;
+  --radius-bubble: 9999px;
+  --cut: 12deg;
+  --tilt-type: -6deg;
+  --tilt-sticker: 4deg;
+  --font-display: Anton, Impact, "Arial Narrow Bold", sans-serif;
+  --font-body: Archivo, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+.t-hero { font-family: var(--font-display); font-size: 120px; line-height: 0.9; font-weight: 400; letter-spacing: -0.01em; text-transform: uppercase; }
+.t-menu { font-family: var(--font-display); font-size: 64px; line-height: 0.95; font-weight: 400; text-transform: uppercase; }
+.t-title { font-family: var(--font-display); font-size: 36px; line-height: 1; font-weight: 400; letter-spacing: 0.01em; text-transform: uppercase; }
+.t-heading { font-family: var(--font-body); font-size: 20px; line-height: 26px; font-weight: 800; }
+.t-body { font-family: var(--font-body); font-size: 16px; line-height: 24px; font-weight: 400; }
+.t-small { font-family: var(--font-body); font-size: 13px; line-height: 18px; font-weight: 500; }
+.t-label { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.t-stat { font-family: var(--font-mono); font-size: 14px; line-height: 20px; font-weight: 700; }

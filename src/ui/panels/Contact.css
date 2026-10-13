@@ -1,23 +1,23 @@
-/* Clavier de la cabine (bas droite) */
+/* Clavier de la cabine (bas gauche, comme le clavier du distributeur) */
 .dial-box {
   position: fixed;
   z-index: 10;
-  right: 3vw;
+  left: 3vw;
   bottom: 6vh;
   display: grid;
   gap: 0.7rem;
-  padding: 1rem 1.2rem 1.2rem 2.5rem;
+  padding: 1rem 2.5rem 1.2rem 1.2rem;
   text-transform: uppercase;
-  color: var(--paper);
-  background: var(--ink);
-  transform: rotate(3deg);
-  clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
-  box-shadow: -8px 8px 0 var(--pop-acid);
+  color: var(--ink);
+  background: var(--slab);
+  transform: rotate(-3deg);
+  clip-path: polygon(0 0, 90% 0, 100% 100%, 0 100%);
+  box-shadow: 8px 8px 0 var(--pop-mint);
 }
 .dial-box .hint {
   font-weight: 700;
   font-size: 0.85rem;
-  color: var(--pop-acid);
+  color: var(--pop-mint);
 }
 .dial-box ul {
   display: grid;
@@ -32,7 +32,7 @@
   padding: 0.3em 0.9em;
   font-family: var(--font-display);
   font-size: 1.1rem;
-  color: var(--ink);
+  color: var(--on-pop);
   text-decoration: none;
   background: var(--key);
   clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
@@ -42,6 +42,6 @@
   transform: translateY(-0.2rem);
 }
 .dial-box a:focus-visible {
-  outline: 4px solid var(--accent);
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }

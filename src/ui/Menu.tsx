@@ -5,6 +5,7 @@ import AboutPanel from './panels/About'
 import ContactPanel from './panels/Contact'
 import ProjectsPanel from './panels/Projects'
 import SkillsPanel from './panels/Skills'
+import lockup from '../../design-system/logos/lockup-slab.svg'
 import './Menu.css'
 
 const ITEMS: { id: ZoneId; label: string }[] = [
@@ -57,23 +58,34 @@ export default function Menu() {
   return (
     <>
       {mode === 'overview' ? (
-        <nav className="menu" aria-label="Quartiers">
-          <ul>
-            {ITEMS.map((it, i) => (
-              <li key={it.id} style={{ '--i': i } as CSSProperties}>
-                <button className="menu-item" onClick={() => go(it.id)}>
-                  {it.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <>
+          <img className="lockup" src={lockup} alt="Owen Donnars" />
+          <nav className="menu" aria-label="Quartiers">
+            <ul>
+              {ITEMS.map((it, i) => (
+                <li key={it.id} style={{ '--i': i } as CSSProperties}>
+                  <button className="menu-item" onClick={() => go(it.id)}>
+                    <span className="menu-code">0{i + 1}</span>
+                    <span className="menu-label">{it.label}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          {/* Image d'arrivée : couches décalées encre / lavande / image, bord gauche en éclat façon Persona.
+              Elle cache le perso 3D (Hero) posé derrière ; au clic, le balayage l'enlève et le perso part en sautant. */}
+          <figure className="hero-art" aria-hidden>
+            <div className="hero-art-ink" />
+            <div className="hero-art-lav" />
+            <div className="hero-art-img">{/* <img src="…" alt="" /> quand l'image sera prête */}</div>
+          </figure>
+        </>
       ) : (
         <>
           <div className="zone-bar">
             <h1 className="zone-title">{ITEMS.find((it) => it.id === zoneId)?.label}</h1>
             <button className="back" onClick={() => go(null)}>
-              ← Retour <kbd>Échap</kbd>
+              <span>← Retour <kbd>Échap</kbd></span>
             </button>
           </div>
           {zoneId === 'projects' && <ProjectsPanel />}
@@ -96,13 +108,13 @@ export default function Menu() {
           ) : (
             <div key={swipe} className="swipe" aria-hidden>
               <motion.div
-                className="swipe-band swipe-red"
+                className="swipe-band swipe-lav"
                 initial={{ x: '-110%' }}
                 animate={{ x: '110%' }}
                 transition={{ duration: SWIPE_S, ease: EASE }}
               />
               <motion.div
-                className="swipe-band swipe-ink"
+                className="swipe-band swipe-ground"
                 initial={{ x: '-110%' }}
                 animate={{ x: '110%' }}
                 transition={{ duration: SWIPE_S, ease: EASE, delay: 0.08 }}
